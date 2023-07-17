@@ -27,6 +27,7 @@ func getFileName() string {
 	fmt.Println("Please select a wordlist:")
 	fmt.Println("1: Xato-net 10 million passwords")
 	//TODO: add more options here
+	//TODO: This should probably be broken out into a JSON or .yaml file.
 	var wordlistChoice string
 	fmt.Scan(&wordlistChoice)
 
@@ -144,8 +145,11 @@ func main() {
 	appMode = getAppMode()
 	fileName = getFileName()
 
+	//downloads the selected textlist for quick iteration
 	downloadLink(fileName)
 
+	//main application loop
+	//TODO: give the ability to exit this loop and go back to redefine another appMode
 	for {
 		filePath := "wordList.txt"
 
@@ -156,7 +160,8 @@ func main() {
 		}
 		defer file.Close()
 
-		fmt.Println("\nPlease enter the password you wish to find:")
+		//get the requested password or hash from the user
+		fmt.Println("\nPlease enter the password or hash you wish to compare:")
 		var password string
 		fmt.Scan(&password)
 
