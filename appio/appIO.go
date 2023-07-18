@@ -6,15 +6,24 @@ import (
 	"os"
 )
 
-func OpenFile(fileName string) {
+func ReadFileAsString(filename string) (string, error) {
+	// Read the file contents
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
 
+	// Convert the byte slice to a string
+	str := string(content)
+
+	return str, nil
 }
 
 func ScanFile(fileName string) {
 
 }
 
-func DownloadURL(url string) {
+func DownloadURL(url string, fileName string) {
 	// Send GET request
 	response, err := http.Get(url)
 	if err != nil {
@@ -23,7 +32,7 @@ func DownloadURL(url string) {
 	defer response.Body.Close()
 
 	// Create local file
-	out, err := os.Create("wordList.txt")
+	out, err := os.Create(fileName + ".txt")
 	if err != nil {
 		panic(err)
 	}

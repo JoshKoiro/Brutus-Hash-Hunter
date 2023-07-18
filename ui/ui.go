@@ -1,6 +1,20 @@
 package ui
 
-import "fmt"
+import (
+	"brutus-hash-hunter/appio"
+	"fmt"
+)
+
+func ShowSplash() {
+	//show splashscreen text file on startup
+	splashText, err := appio.ReadFileAsString("splashscreen-manytools_org.txt")
+	if err != nil {
+		fmt.Println("Error getting splashscreen...\n", err)
+		return
+	}
+
+	fmt.Println(splashText)
+}
 
 func SetAppMode() string {
 	fmt.Println("Welcome to Brutus! Please choose an option(1/2):")

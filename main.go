@@ -69,18 +69,19 @@ func compareHashesApp(file io.Reader, password string) {
 }
 
 func main() {
+	ui.ShowSplash()
 	var progMode string
 	var wordList string
 	progMode = ui.SetAppMode()
 	wordList = ui.SetWordList()
 
 	//downloads the selected textlist for quick iteration
-	appio.DownloadURL(wordList)
+	appio.DownloadURL(wordList, "Xato") //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
 	//main application loop
 	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
-		filePath := "wordList.txt"
+		filePath := "Xato.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
 		file, err := os.Open(filePath)
 		if err != nil {
