@@ -3,7 +3,6 @@ package main
 import (
 	"brutus-hash-hunter/appio"
 	"brutus-hash-hunter/compare"
-	"brutus-hash-hunter/hashes"
 	"brutus-hash-hunter/ui"
 	"bufio"
 	"fmt"
@@ -20,7 +19,7 @@ func compareTextApp(file io.Reader, password string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if hashes.CompareText(line, password) {
+		if compare.CompareText(line, password) {
 			fmt.Printf("password found at line %v!\n", iteration)
 			break
 		} else {
@@ -75,10 +74,8 @@ func main() {
 	progMode = ui.SetAppMode()
 	wordList = ui.SetWordList()
 
-	//downloads the selected textlist for quick iteration
 	appio.DownloadURL(wordList, "Xato") //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
-	//main application loop
 	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
 		filePath := "Xato.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
@@ -90,8 +87,7 @@ func main() {
 		}
 		defer file.Close()
 
-		//get the requested password or hash from the user
-		fmt.Println("\nPlease enter the password or hash you wish to compare:")
+		fmt.Println("\nPlease enter the text string you wish to compare:")
 		var password string
 		fmt.Scan(&password)
 
