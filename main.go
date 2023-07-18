@@ -1,89 +1,18 @@
 package main
 
 import (
+	"brutus-hash-hunter/appio"
+	"brutus-hash-hunter/compare"
+	"brutus-hash-hunter/hashes"
+	"brutus-hash-hunter/ui"
 	"bufio"
-	"crypto/sha256"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"time"
 )
 
-func getAppMode() string {
-	fmt.Println("Welcome to BrUTus. Please choose an option(1/2):")
-	fmt.Println("1: check password against list")
-	fmt.Println("2: check password hash against hashes")
-	var programChoice string
-	fmt.Scan(&programChoice)
-
-	//TODO: validate the input
-
-	return programChoice
-}
-
-func getFileName() string {
-	var link string
-	fmt.Println("Please select a wordlist:")
-	fmt.Println("1: Xato-net 10 million passwords")
-	//TODO: add more options here
-	//TODO: This should probably be broken out into a JSON or .yaml file.
-	var wordlistChoice string
-	fmt.Scan(&wordlistChoice)
-
-	switch wordlistChoice {
-	case "1":
-		link = "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt"
-	//TODO: add more options here
-	default:
-		link = "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt"
-	}
-
-	return link
-}
-
-func downloadLink(url string) {
-	// Send GET request
-	response, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	defer response.Body.Close()
-
-	// Create local file
-	out, err := os.Create("wordList.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer out.Close()
-
-	// Write body to file
-	_, err = io.Copy(out, response.Body)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func comparePassword(lineVal string, password string) bool {
-	if lineVal == password {
-		return true
-	} else {
-		return false
-	}
-}
-
-func hashSHA256(value string) string {
-	hash := sha256.Sum256([]byte(value))
-	return fmt.Sprintf("%x", hash)
-}
-
-func compareHash(lineVal string, password string) bool {
-	var hashedLine string = hashSHA256(lineVal)
-	var hashedPass string = hashSHA256(password)
-	return hashedLine == hashedPass
-}
-
-func comparePasswordApp(file io.Reader, password string) {
+func compareTextApp(file io.Reader, password string) {
 	var iteration int = 1
 
 	//timer starts here
@@ -91,7 +20,7 @@ func comparePasswordApp(file io.Reader, password string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if comparePassword(line, password) {
+		if hashes.CompareText(line, password) {
 			fmt.Printf("password found at line %v!\n", iteration)
 			break
 		} else {
@@ -119,7 +48,7 @@ func compareHashesApp(file io.Reader, password string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if compareHash(line, password) {
+		if compare.CompareSHA256(line, password) {
 			fmt.Printf("password found at line %v!\n", iteration)
 			break
 		} else {
@@ -140,16 +69,16 @@ func compareHashesApp(file io.Reader, password string) {
 }
 
 func main() {
-	var appMode string
-	var fileName string
-	appMode = getAppMode()
-	fileName = getFileName()
+	var progMode string
+	var wordList string
+	progMode = ui.SetAppMode()
+	wordList = ui.SetWordList()
 
 	//downloads the selected textlist for quick iteration
-	downloadLink(fileName)
+	appio.DownloadURL(wordList)
 
 	//main application loop
-	//TODO: give the ability to exit this loop and go back to redefine another appMode
+	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
 		filePath := "wordList.txt"
 
@@ -165,9 +94,9 @@ func main() {
 		var password string
 		fmt.Scan(&password)
 
-		switch appMode {
+		switch progMode {
 		case "1":
-			comparePasswordApp(file, password)
+			compareTextApp(file, password)
 		case "2":
 			compareHashesApp(file, password)
 		}
