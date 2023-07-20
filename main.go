@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func compareTextApp(file io.Reader, password string) {
+func compareTextApp(file io.Reader, userString string) {
 	var iteration int = 1
 
 	//timer starts here
@@ -19,8 +19,8 @@ func compareTextApp(file io.Reader, password string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if compare.CompareText(line, password) {
-			fmt.Printf("password found at line %v!\n", iteration)
+		if compare.CompareText(line, userString) {
+			fmt.Printf("userString found at line %v!\n", iteration)
 			break
 		} else {
 			iteration++
@@ -39,7 +39,7 @@ func compareTextApp(file io.Reader, password string) {
 	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
 }
 
-func compareHashesApp(file io.Reader, password string) {
+func compareHashesApp(file io.Reader, userString string) {
 	var iteration int = 1
 
 	//timer starts here
@@ -47,8 +47,8 @@ func compareHashesApp(file io.Reader, password string) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if compare.CompareSHA256(line, password) {
-			fmt.Printf("password found at line %v!\n", iteration)
+		if compare.CompareSHA256(line, userString) {
+			fmt.Printf("userString found at line %v!\n", iteration)
 			break
 		} else {
 			iteration++
@@ -88,14 +88,14 @@ func main() {
 		defer file.Close()
 
 		fmt.Println("\nPlease enter the text string you wish to compare:")
-		var password string
-		fmt.Scan(&password)
+		var userString string
+		fmt.Scan(&userString)
 
 		switch progMode {
 		case "1":
-			compareTextApp(file, password)
+			compareTextApp(file, userString)
 		case "2":
-			compareHashesApp(file, password)
+			compareHashesApp(file, userString)
 		}
 
 	}
