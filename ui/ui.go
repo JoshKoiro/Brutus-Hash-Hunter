@@ -6,7 +6,6 @@ import (
 )
 
 func ShowSplash() {
-	//show splashscreen text file on startup
 	splashText, err := appio.ReadFileAsString("splashscreen-manytools_org.txt")
 	if err != nil {
 		fmt.Println("Error getting splashscreen...\n", err)
@@ -32,8 +31,7 @@ func SetWordList() string {
 	var link string
 	fmt.Println("Please select a wordlist:")
 	fmt.Println("1: Xato-net 10 million passwords")
-	//TODO: add more options here
-	//TODO: This should probably be broken out into a JSON or .yaml file.
+	//TODO: This should work with the appio.GetLibrary() function
 	var wordlistChoice string
 	fmt.Scan(&wordlistChoice)
 
