@@ -2,68 +2,61 @@ package main
 
 import (
 	"brutus-hash-hunter/appio"
-	"brutus-hash-hunter/compare"
+	"brutus-hash-hunter/hashes"
 	"brutus-hash-hunter/ui"
 	"bufio"
 	"fmt"
-	"io"
 	"os"
+	"runtime"
 	"time"
 )
 
-func compareTextApp(file io.Reader, userString string) {
-	var iteration int = 1
-
-	//timer starts here
-	startTime := time.Now()
+func processLines(file *os.File, searchString string, resultChan chan<- bool) {
+	hashedUserText := hashes.SHA256(searchString)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if compare.CompareText(line, userString) {
-			fmt.Printf("userString found at line %v!\n", iteration)
-			break
-		} else {
-			iteration++
-		}
+		match := hashes.SHA256(line) == hashedUserText
+		resultChan <- match
 	}
-
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
+		fmt.Println("Error while reading file:", err)
 	}
-
-	//timer ends here
-	endTime := time.Now()
-	duration := endTime.Sub(startTime)
-	mDuration := duration.Milliseconds()
-	fmt.Printf("Number of iterations: %v\n", iteration)
-	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
 }
 
-func compareHashesApp(file io.Reader, userString string) {
-	var iteration int = 1
+func compareHashesApp(filePath string, userString string) {
 
-	//timer starts here
+	numCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(numCPU)
+
+	resultChan := make(chan bool)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
 	startTime := time.Now()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if compare.CompareSHA256(line, userString) {
-			fmt.Printf("userString found at line %v!\n", iteration)
-			break
-		} else {
-			iteration++
-		}
+	for i := 0; i < numCPU; i++ {
+		go processLines(file, userString, resultChan)
 	}
 
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
+	// Collect results
+	for i := 0; i < numCPU; i++ {
+		match := <-resultChan
+		if match {
+			fmt.Println("Match found!")
+		} else {
+			fmt.Println("No match found.")
+		}
 	}
 
 	//timer ends here
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	mDuration := duration.Milliseconds()
-	fmt.Printf("Number of iterations: %v\n", iteration)
 	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
 }
 
@@ -80,22 +73,15 @@ func main() {
 	for {
 		filePath := "Xato.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
-		file, err := os.Open(filePath)
-		if err != nil {
-			fmt.Println("Error opening file:", err)
-			return
-		}
-		defer file.Close()
-
 		fmt.Println("\nPlease enter the text string you wish to compare:")
 		var userString string
 		fmt.Scan(&userString)
 
 		switch progMode {
 		case "1":
-			compareTextApp(file, userString)
+			// compareTextApp(file, userString)
 		case "2":
-			compareHashesApp(file, userString)
+			compareHashesApp(filePath, userString)
 		}
 
 	}
