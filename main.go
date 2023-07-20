@@ -4,60 +4,77 @@ import (
 	"brutus-hash-hunter/appio"
 	"brutus-hash-hunter/hashes"
 	"brutus-hash-hunter/ui"
-	"bufio"
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 )
 
-func processLines(file *os.File, searchString string, resultChan chan<- bool) {
+func processLines(lines []string, searchString string, resultChan chan<- bool, done chan struct{}) {
 	hashedUserText := hashes.SHA256(searchString)
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range lines {
 		match := hashes.SHA256(line) == hashedUserText
 		resultChan <- match
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error while reading file:", err)
+
+		// Check if any goroutine found a match
+		select {
+		case <-done:
+			return
+		default:
+		}
 	}
 }
 
 func compareHashesApp(filePath string, userString string) {
-
-	numCPU := runtime.NumCPU()
-	runtime.GOMAXPROCS(numCPU)
-
-	resultChan := make(chan bool)
-
-	file, err := os.Open(filePath)
+	file, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return
 	}
-	defer file.Close()
+	lines := strings.Split(string(file), "\n")
 
+	numCPU := runtime.NumCPU()
+	resultChan := make(chan bool)
+	done := make(chan struct{})
+
+	lineChunks := chunkLines(lines, numCPU)
 	startTime := time.Now()
-	for i := 0; i < numCPU; i++ {
-		go processLines(file, userString, resultChan)
+
+	for _, chunk := range lineChunks {
+		go processLines(chunk, userString, resultChan, done)
 	}
 
-	// Collect results
-	for i := 0; i < numCPU; i++ {
+	// Check if any goroutine found a match
+	for range lineChunks {
 		match := <-resultChan
 		if match {
+			close(done) // Signal other goroutines to stop processing
 			fmt.Println("Match found!")
+			break
 		} else {
 			fmt.Println("No match found.")
 		}
 	}
 
-	//timer ends here
+	// Timer ends here
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	mDuration := duration.Milliseconds()
 	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
+}
+
+func chunkLines(lines []string, numChunks int) [][]string {
+	chunkSize := (len(lines) + numChunks - 1) / numChunks // calculate chunk size
+	var chunks [][]string
+	for i := 0; i < len(lines); i += chunkSize {
+		end := i + chunkSize
+		if end > len(lines) {
+			end = len(lines)
+		}
+		chunks = append(chunks, lines[i:end])
+	}
+	return chunks
 }
 
 func main() {
