@@ -65,7 +65,7 @@ func compareHashesApp(filePath string, userString string) {
 }
 
 func chunkLines(lines []string, numChunks int) [][]string {
-	chunkSize := (len(lines) + numChunks - 1) / numChunks // calculate chunk size
+	chunkSize := len(lines) / numChunks // calculate chunk size
 	var chunks [][]string
 	for i := 0; i < len(lines); i += chunkSize {
 		end := i + chunkSize
@@ -83,6 +83,8 @@ func main() {
 	var wordList string
 	progMode = ui.SetAppMode()
 	wordList = ui.SetWordList()
+
+	//TODO: Check if wordlist is already downloaded - do not download if it is.
 
 	appio.DownloadURL(wordList, "Xato") //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
