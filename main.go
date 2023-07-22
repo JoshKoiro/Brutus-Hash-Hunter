@@ -11,17 +11,19 @@ import (
 	"time"
 )
 
-func processLines(lines []string, searchString string, resultChan chan<- bool, done chan struct{}) {
-	hashedUserText := hashes.SHA256(searchString)
-	for _, line := range lines {
-		match := hashes.SHA256(line) == hashedUserText
-		resultChan <- match
+type Result struct {
+	StringVal string
+	Match     bool
+}
 
-		// Check if any goroutine found a match
-		select {
-		case <-done:
-			return
-		default:
+func worker(workID int, userStringHash string, jobs <-chan string, results chan<- Result) {
+	for n := range jobs {
+		if userStringHash == hashes.SHA256(n) {
+			//found a match
+			results <- Result{StringVal: n, Match: true}
+		} else {
+			//no match
+			results <- Result{StringVal: n, Match: false}
 		}
 	}
 }
@@ -33,27 +35,30 @@ func compareHashesApp(filePath string, userString string) {
 		return
 	}
 	lines := strings.Split(string(file), "\n")
+	fileLength := len(lines)
 
+	//creating channels
+	jobs := make(chan string, fileLength+1)
+	results := make(chan Result, fileLength+1)
 	numCPU := runtime.NumCPU()
-	resultChan := make(chan bool)
-	done := make(chan struct{})
-
-	lineChunks := chunkLines(lines, numCPU)
 	startTime := time.Now()
+	userStringHash := hashes.SHA256(userString)
 
-	for _, chunk := range lineChunks {
-		go processLines(chunk, userString, resultChan, done)
+	//Create workers
+	for j := 1; j <= numCPU; j++ {
+		go worker(j, userStringHash, jobs, results)
 	}
 
-	// Check if any goroutine found a match
-	for range lineChunks {
-		match := <-resultChan
-		if match {
-			close(done) // Signal other goroutines to stop processing
-			fmt.Println("Match found!")
+	//fill up jobs
+	for _, line := range lines {
+		jobs <- line
+	}
+
+	for a := 1; a <= fileLength; a++ {
+		result := <-results
+		if result.Match {
+			fmt.Printf("\nFound a match: %v on line %v \n", result.StringVal, a)
 			break
-		} else {
-			fmt.Println("No match found.")
 		}
 	}
 
@@ -62,19 +67,6 @@ func compareHashesApp(filePath string, userString string) {
 	duration := endTime.Sub(startTime)
 	mDuration := duration.Milliseconds()
 	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
-}
-
-func chunkLines(lines []string, numChunks int) [][]string {
-	chunkSize := len(lines) / numChunks // calculate chunk size
-	var chunks [][]string
-	for i := 0; i < len(lines); i += chunkSize {
-		end := i + chunkSize
-		if end > len(lines) {
-			end = len(lines)
-		}
-		chunks = append(chunks, lines[i:end])
-	}
-	return chunks
 }
 
 func main() {
