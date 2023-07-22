@@ -15,18 +15,6 @@ func ShowSplash() {
 	fmt.Println(splashText)
 }
 
-func SetAppMode() string {
-	fmt.Println("Welcome to Brutus! Please choose an option(1/2):")
-	fmt.Println("1: check text against list")
-	fmt.Println("2: check text hash against hashes")
-	var progMode string
-	fmt.Scan(&progMode)
-
-	//TODO: validate the input
-
-	return progMode
-}
-
 func SetWordList() string {
 	var link string
 	fmt.Println("Please select a wordlist:")

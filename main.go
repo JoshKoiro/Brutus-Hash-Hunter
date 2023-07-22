@@ -61,6 +61,11 @@ func compareHashesApp(filePath string, userString string) {
 			fmt.Printf("Found in filename: %v \n", filePath)
 			break
 		}
+
+		if a == fileLength {
+			fmt.Println("No matches found")
+			break
+		}
 	}
 
 	// Timer ends here
@@ -72,9 +77,7 @@ func compareHashesApp(filePath string, userString string) {
 
 func main() {
 	ui.ShowSplash()
-	var progMode string
 	var wordList string
-	progMode = ui.SetAppMode()
 	wordList = ui.SetWordList()
 
 	//TODO: Check if wordlist is already downloaded - do not download if it is.
@@ -88,13 +91,7 @@ func main() {
 		fmt.Println("\nPlease enter the hash value you wish to find:")
 		var userString string
 		fmt.Scan(&userString)
-
-		switch progMode {
-		case "1":
-			// compareTextApp(file, userString)
-		case "2":
-			compareHashesApp(filePath, userString)
-		}
+		compareHashesApp(filePath, userString)
 
 	}
 }
