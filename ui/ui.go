@@ -23,7 +23,7 @@ func FilesMessage(wordListsLength int) {
 }
 
 func AskForHash() string {
-	color.Yellow("\nPlease enter the SHA256 hash value you wish to find:")
+	color.Yellow("\nPlease enter the SHA256 hash value you wish to find (press ctrl-c to exit):")
 	var hash string
 	fmt.Scan(&hash)
 	return hash
