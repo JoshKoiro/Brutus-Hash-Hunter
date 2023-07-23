@@ -16,7 +16,7 @@ func DownloadURL(fileName string, url string) {
 	defer response.Body.Close()
 
 	// Create local file
-	out, err := os.Create(fileName + ".txt")
+	out, err := os.Create("./wordlists/" + fileName + ".txt")
 	if err != nil {
 		panic(err)
 	}

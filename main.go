@@ -64,7 +64,7 @@ func main() {
 
 	var index int = 1
 	for _, value := range configSettings.Wordlists {
-		if _, err := os.Stat(value.Name + ".txt"); err == nil {
+		if _, err := os.Stat("./wordlists/" + value.Name + ".txt"); err == nil {
 			fmt.Printf("(%v/%v) Already downloaded %v\n", index, len(configSettings.Wordlists), value.Name)
 		} else {
 			fmt.Printf("(%v/%v) Downloading %v...\n", index, len(configSettings.Wordlists), value.Name)
