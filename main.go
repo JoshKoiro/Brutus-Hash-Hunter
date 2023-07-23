@@ -4,8 +4,9 @@ import (
 	"brutus-hash-hunter/configFile"
 	"brutus-hash-hunter/ui"
 	"brutus-hash-hunter/workers"
-	"fmt"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var itemFound bool = false
@@ -40,11 +41,11 @@ func main() {
 				break
 			}
 			filePath = "./wordlists/" + value.Name + ".txt"
-			fmt.Printf("\n\nSearching %v...\n", value.Name)
+			color.HiBlue("\n\nSearching %v...\n", value.Name)
 			workers.ProcessFile(filePath, userString, value.Name, pItemFound)
 
 			if !itemFound {
-				fmt.Printf("Item was not found in any of the wordlists")
+				color.Red("Item was not found in any of the wordlists")
 			}
 		}
 
@@ -52,7 +53,7 @@ func main() {
 		endTime := time.Now()
 		duration := endTime.Sub(startTime)
 		mDuration := duration.Milliseconds()
-		fmt.Printf("\n\nElapsed Time: %v seconds\n\n", mDuration)
+		color.Green("\n\nElapsed Time: %v ms\n\n", mDuration)
 
 	}
 }

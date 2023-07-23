@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 var wg sync.WaitGroup
@@ -31,15 +33,18 @@ func ProcessFile(filePath string, userString string, fileName string, itemFound 
 		*iterate = *iterate + 1
 	}
 	wg.Wait()
-	fmt.Printf("while searching %v lines...", *iterate)
+	color.HiBlack("searched %v lines...", *iterate)
 }
 
 func Worker(userString string, lineNbr int, line string, fileName string, itemFound *bool) {
 	if userString == hashes.SHA256(line) {
-		//found a match
-		fmt.Printf("\n Found a match! %v", line)
-		fmt.Printf("\n on line %v", lineNbr)
-		fmt.Printf(" in %v\n", fileName)
+		boldGreen := color.New(color.FgGreen).Add(color.Bold).Add(color.Underline)
+		fmt.Println("\n=========================================")
+		boldGreen.Printf("\nFound a match!")
+		color.HiGreen(" %v", line)
+		color.HiBlue("\non line %v", lineNbr)
+		color.HiBlue("in %v\n", fileName)
+		fmt.Println("\n=========================================")
 		*itemFound = true
 	}
 	wg.Done()
