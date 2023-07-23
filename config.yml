@@ -22,3 +22,6 @@ honeynet2:
 hotmail:
   name: "hotmail"
   link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/hotmail.txt"
+milw0rm:
+  name: "milw0rm-dictionary"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Cracked-Hashes/milw0rm-dictionary.txt"
