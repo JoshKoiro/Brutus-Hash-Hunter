@@ -1,7 +1,6 @@
 package main
 
 import (
-	"brutus-hash-hunter/appio"
 	"brutus-hash-hunter/configFile"
 	"brutus-hash-hunter/hashes"
 	"brutus-hash-hunter/ui"
@@ -20,7 +19,7 @@ type Result struct {
 	Match     bool
 }
 
-func readFile(filePath string, userString string, fileName string) {
+func hashFile(filePath string, userString string, fileName string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -37,14 +36,14 @@ func readFile(filePath string, userString string, fileName string) {
 			return
 		}
 		wg.Add(1)
-		go simpleWorker(userString, *iterate, scanner.Text(), fileName)
+		go Worker(userString, *iterate, scanner.Text(), fileName)
 		*iterate = *iterate + 1
 	}
 	wg.Wait()
 	fmt.Printf("while searching %v lines...", *iterate)
 }
 
-func simpleWorker(userString string, lineNbr int, line string, fileName string) {
+func Worker(userString string, lineNbr int, line string, fileName string) {
 	if userString == hashes.SHA256(line) {
 		//found a match
 		fmt.Printf("\n Found a match! %v", line)
@@ -59,20 +58,11 @@ func main() {
 	ui.ShowSplash()
 	configSettings := new(configFile.Config)
 	configSettings.Initialize()
+	var wordListLength int = len(configSettings.Wordlists)
 
-	fmt.Printf("\nNumber of files loaded from config: %v\n", len(configSettings.Wordlists))
-	fmt.Printf("\nFiles loaded:\n")
+	ui.FilesMessage(wordListLength)
 
-	var index int = 1
-	for _, value := range configSettings.Wordlists {
-		if _, err := os.Stat("./wordlists/" + value.Name + ".txt"); err == nil {
-			fmt.Printf("(%v/%v) Already downloaded %v\n", index, len(configSettings.Wordlists), value.Name)
-		} else {
-			fmt.Printf("(%v/%v) Downloading %v...\n", index, len(configSettings.Wordlists), value.Name)
-			appio.DownloadURL(value.Name, value.Link)
-		}
-		index++
-	}
+	configSettings.DownloadFiles()
 
 	for {
 		var filePath string
@@ -80,25 +70,28 @@ func main() {
 		fmt.Println("\nPlease enter the hash value you wish to find:")
 		var userString string
 		fmt.Scan(&userString)
+
 		startTime := time.Now()
 		itemFound = false
+
 		for _, value := range configSettings.Wordlists {
 			if itemFound {
 				break
 			}
 			filePath = "./wordlists/" + value.Name + ".txt"
 			fmt.Printf("\n\nSearching %v...\n", value.Name)
-			readFile(filePath, userString, value.Name)
+			hashFile(filePath, userString, value.Name)
 
 			if !itemFound {
 				fmt.Printf("Item was not found in any of the wordlists")
 			}
 		}
+
 		// Timer ends here
 		endTime := time.Now()
 		duration := endTime.Sub(startTime)
 		mDuration := duration.Milliseconds()
-		fmt.Printf("\n\nElapsed Time: %v ms\n\n", mDuration)
+		fmt.Printf("\n\nElapsed Time: %v seconds\n\n", mDuration)
 
 	}
 }
