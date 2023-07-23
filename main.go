@@ -2,13 +2,12 @@ package main
 
 import (
 	"brutus-hash-hunter/appio"
+	"brutus-hash-hunter/configFile"
 	"brutus-hash-hunter/hashes"
 	"brutus-hash-hunter/ui"
 	"bufio"
 	"fmt"
 	"os"
-	"runtime"
-	"strings"
 	"sync"
 	"time"
 )
@@ -19,65 +18,6 @@ var itemFound bool = false
 type Result struct {
 	StringVal string
 	Match     bool
-}
-
-// type FileLine struct {
-// 	lineNbr int
-// 	text    string
-// }
-
-func worker(workID int, userString string, jobs <-chan string, results chan<- Result) {
-	for n := range jobs {
-		if userString == hashes.SHA256(n) {
-			//found a match
-			results <- Result{StringVal: n, Match: true}
-		}
-	}
-}
-
-func ProcessFiles(filePath string, userString string) {
-	file, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
-	}
-
-	lines := strings.Split(string(file), "\n")
-	fileLength := len(lines)
-
-	//creating channels
-	jobs := make(chan string, fileLength+1)
-	results := make(chan Result)
-	numCPU := runtime.NumCPU()
-	startTime := time.Now()
-
-	//Create workers
-	for j := 1; j <= numCPU; j++ {
-		go worker(j, userString, jobs, results)
-	}
-
-	//fill up jobs
-	for _, line := range lines {
-		jobs <- line
-	}
-
-	fmt.Printf("length of jobs: %v\n", len(jobs))
-
-	// Timer ends here
-	endTime := time.Now()
-	duration := endTime.Sub(startTime)
-	mDuration := duration.Milliseconds()
-	fmt.Printf("Elapsed Time: %v ms\n", mDuration)
-
-	for result := range results {
-		if result.Match {
-			fmt.Printf("\nFound a match: %v \n", result.StringVal)
-			fmt.Printf("Found in filename: %v \n", filePath)
-		} else {
-			fmt.Println("No matches found")
-			break
-		}
-	}
 }
 
 func readFile(filePath string, userString string) {
@@ -116,15 +56,26 @@ func simpleWorker(userString string, lineNbr int, line string) {
 
 func main() {
 	ui.ShowSplash()
-	var wordList string = ui.SetWordList()
+	configSettings := new(configFile.Config)
+	configSettings.Initialize()
 
-	//TODO: Check if wordlist is already downloaded - do not download if it is.
+	fmt.Printf("\nNumber of files loaded from config: %v\n", len(configSettings.Wordlists))
+	fmt.Printf("\nFiles loaded:\n")
 
-	appio.DownloadURL(wordList, "Xato") //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
+	var index int = 1
+	for _, value := range configSettings.Wordlists {
+		if _, err := os.Stat(value.Name + ".txt"); err == nil {
+			fmt.Printf("(%v/%v) Already downloaded %v\n", index, len(configSettings.Wordlists), value.Name)
+		} else {
+			fmt.Printf("(%v/%v) Downloading %v...\n", index, len(configSettings.Wordlists), value.Name)
+			appio.DownloadURL(value.Name, value.Link)
+		}
+		index++
+	}
 
 	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
-		filePath := "Xato.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
+		filePath := "Xato-net-10-million-passwords.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
 
 		fmt.Println("\nPlease enter the hash value you wish to find:")
 		var userString string

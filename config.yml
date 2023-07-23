@@ -1,0 +1,6 @@
+xato-net-10:
+  name: "Xato-net-10-million-passwords"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt"
+10-mill-passwords:
+  name: "10-million-password-list"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-1000000.txt"
