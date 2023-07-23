@@ -19,3 +19,10 @@ func FilesMessage(wordListsLength int) {
 	fmt.Printf("\nNumber of files loaded from config: %v\n", wordListsLength)
 	fmt.Printf("\nFiles loaded:\n")
 }
+
+func AskForHash() string {
+	fmt.Println("\nPlease enter the hash value you wish to find:")
+	var hash string
+	fmt.Scan(&hash)
+	return hash
+}

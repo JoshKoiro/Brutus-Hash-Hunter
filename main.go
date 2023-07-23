@@ -58,18 +58,17 @@ func main() {
 	ui.ShowSplash()
 	configSettings := new(configFile.Config)
 	configSettings.Initialize()
+
 	var wordListLength int = len(configSettings.Wordlists)
 
 	ui.FilesMessage(wordListLength)
-
 	configSettings.DownloadFiles()
 
 	for {
 		var filePath string
-
-		fmt.Println("\nPlease enter the hash value you wish to find:")
 		var userString string
-		fmt.Scan(&userString)
+		pUserString := &userString
+		*pUserString = ui.AskForHash()
 
 		startTime := time.Now()
 		itemFound = false
