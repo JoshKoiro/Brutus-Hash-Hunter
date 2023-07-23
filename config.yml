@@ -1,6 +1,24 @@
 xato-net-10:
   name: "Xato-net-10-million-passwords"
   link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt"
-10-mill-passwords:
-  name: "10-million-password-list"
-  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-1000000.txt"
+rockyou-75:
+  name: "rockyou-75"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/rockyou-75.txt"
+000webhost:
+  name: "000webhost"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/000webhost.txt"
+NordVPN:
+  name: "NordVPN"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/NordVPN.txt"
+alleged-gmail:
+  name: "alleged-gmail"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/alleged-gmail-passwords.txt"
+honeynet:
+  name: "honeynet"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/honeynet.txt"
+honeynet2:
+  name: "honeynet2"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/honeynet2.txt"
+hotmail:
+  name: "hotmail"
+  link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Leaked-Databases/hotmail.txt"

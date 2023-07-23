@@ -20,7 +20,7 @@ type Result struct {
 	Match     bool
 }
 
-func readFile(filePath string, userString string) {
+func readFile(filePath string, userString string, fileName string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -37,18 +37,19 @@ func readFile(filePath string, userString string) {
 			return
 		}
 		wg.Add(1)
-		go simpleWorker(userString, *iterate, scanner.Text())
+		go simpleWorker(userString, *iterate, scanner.Text(), fileName)
 		*iterate = *iterate + 1
 	}
 	wg.Wait()
+	fmt.Printf("while searching %v lines...", *iterate)
 }
 
-func simpleWorker(userString string, lineNbr int, line string) {
+func simpleWorker(userString string, lineNbr int, line string, fileName string) {
 	if userString == hashes.SHA256(line) {
 		//found a match
 		fmt.Printf("\n Found a match! %v", line)
-		fmt.Printf("\n in file: ")
-		fmt.Printf("\n on line: %v", lineNbr)
+		fmt.Printf("\n on line %v", lineNbr)
+		fmt.Printf(" in %v\n", fileName)
 		itemFound = true
 	}
 	wg.Done()
@@ -75,20 +76,30 @@ func main() {
 
 	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
-		filePath := "Xato-net-10-million-passwords.txt" //TODO: the second argument is the filename - have this be provided throguh the SetWordList function
+		var filePath string
 
 		fmt.Println("\nPlease enter the hash value you wish to find:")
 		var userString string
 		fmt.Scan(&userString)
-		// processFiles(filePath, userString)
 		startTime := time.Now()
 		itemFound = false
-		readFile(filePath, userString)
+		for _, value := range configSettings.Wordlists {
+			if itemFound {
+				break
+			}
+			filePath = "./wordlists/" + value.Name + ".txt"
+			fmt.Printf("\n\nSearching %v...\n", value.Name)
+			readFile(filePath, userString, value.Name)
+
+			if !itemFound {
+				fmt.Printf("Item was not found in any of the wordlists")
+			}
+		}
 		// Timer ends here
 		endTime := time.Now()
 		duration := endTime.Sub(startTime)
 		mDuration := duration.Milliseconds()
-		fmt.Printf("\nElapsed Time: %v ms", mDuration)
+		fmt.Printf("\n\nElapsed Time: %v ms\n\n", mDuration)
 
 	}
 }
