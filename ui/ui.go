@@ -16,7 +16,7 @@ func ShowSplash() {
 }
 
 func FilesMessage(wordListsLength int) {
-	fmt.Printf("\nNumber of files loaded from config: %v\n", wordListsLength)
+	fmt.Printf("\nNumber of files loaded from config.yaml: %v\n", wordListsLength)
 	fmt.Printf("\nFiles loaded:\n")
 }
 
