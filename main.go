@@ -74,7 +74,6 @@ func main() {
 		index++
 	}
 
-	//TODO: give the ability to exit this loop and go back to redefine another progMode
 	for {
 		var filePath string
 

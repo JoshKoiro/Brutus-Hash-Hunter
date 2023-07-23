@@ -50,11 +50,3 @@ func ReadFileAsString(filename string) (string, error) {
 
 	return str, nil
 }
-
-func GetLibrary() {
-	//TODO: Function to read a JSON library file that contains the word lists that can be downloaded
-}
-
-func DeleteWordList(wordList string) {
-	//TODO: function to delete the word list if the user requests this to be done when file closes
-}

@@ -25,3 +25,6 @@ hotmail:
 milw0rm:
   name: "milw0rm-dictionary"
   link: "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Cracked-Hashes/milw0rm-dictionary.txt"
+hashesorg:
+  name: "HashesOrg"
+  link: "HashesOrg.txt"
