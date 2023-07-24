@@ -1,23 +1,22 @@
 package ui
 
 import (
-	"brutus-hash-hunter/appio"
 	"fmt"
+	"os"
 
 	"github.com/fatih/color"
 )
 
 func ShowSplash() {
-	splashText, err := appio.ReadFileAsString("./config/splashscreen-manytools_org.txt")
+	splashText, err := os.ReadFile("./config/splashscreen-manytools_org.txt")
 	if err != nil {
 		fmt.Println("Error getting splashscreen...\n", err)
 		return
 	}
-	color.Cyan(splashText)
-	// fmt.Println(splashText)
+	color.Cyan(string(splashText))
 }
 
-func FilesMessage(wordListsLength int) {
+func WordlistInfo(wordListsLength int) {
 	color.Green("\nNumber of files loaded from config.yaml: %v\n", wordListsLength)
 	fmt.Printf("\nFiles loaded:\n")
 }

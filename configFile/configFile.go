@@ -13,12 +13,7 @@ const configPath string = "./config/config.yaml"
 
 type Config struct {
 	Filepath  string              `yaml:"-"`
-	Wordlists map[string]WordList `yaml:"-"`
-}
-
-type WordList struct {
-	Name string `yaml:"name"`
-	Link string `yaml:"link"`
+	Wordlists map[string]Wordlist `yaml:"-"`
 }
 
 func (config *Config) Initialize() {
@@ -29,7 +24,7 @@ func (config *Config) Initialize() {
 		return
 	}
 
-	var wordLists = make(map[string]WordList)
+	var wordLists = make(map[string]Wordlist)
 	err = yaml.Unmarshal(configFile, &wordLists)
 	if err != nil {
 		color.Red("\nFailed to unmarshal YAML config file: %v", err)
@@ -50,4 +45,9 @@ func (config *Config) DownloadFiles() {
 		}
 		index++
 	}
+}
+
+type Wordlist struct {
+	Name string `yaml:"name"`
+	Link string `yaml:"link"`
 }

@@ -12,11 +12,6 @@ import (
 var itemFound bool = false
 var pItemFound *bool = &itemFound
 
-type Result struct {
-	StringVal string
-	Match     bool
-}
-
 func main() {
 	ui.ShowSplash()
 	configSettings := new(configFile.Config)
@@ -24,11 +19,11 @@ func main() {
 
 	var wordListLength int = len(configSettings.Wordlists)
 
-	ui.FilesMessage(wordListLength)
+	ui.WordlistInfo(wordListLength)
 	configSettings.DownloadFiles()
 
 	for {
-		var filePath string
+		var curFilePath string
 		var userString string
 		pUserString := &userString
 		*pUserString = ui.AskForHash()
@@ -40,16 +35,15 @@ func main() {
 			if *pItemFound {
 				break
 			}
-			filePath = "./wordlists/" + value.Name + ".txt"
+			curFilePath = "./wordlists/" + value.Name + ".txt"
 			color.HiBlue("\n\nSearching %v...\n", value.Name)
-			workers.ProcessFile(filePath, userString, value.Name, pItemFound)
+			workers.Deploy(curFilePath, userString, value.Name, pItemFound)
 
 			if !itemFound {
 				color.Red("Item was not found in any of the wordlists")
 			}
 		}
 
-		// Timer ends here
 		endTime := time.Now()
 		duration := endTime.Sub(startTime)
 		mDuration := duration.Milliseconds()

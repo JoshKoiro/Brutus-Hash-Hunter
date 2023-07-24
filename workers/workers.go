@@ -12,7 +12,7 @@ import (
 
 var wg sync.WaitGroup
 
-func ProcessFile(filePath string, userString string, fileName string, itemFound *bool) {
+func Deploy(filePath string, userString string, fileName string, itemFound *bool) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -20,16 +20,16 @@ func ProcessFile(filePath string, userString string, fileName string, itemFound 
 	}
 
 	defer file.Close()
-	scanner := bufio.NewScanner(file)
+	fileLine := bufio.NewScanner(file)
 	i := 1
 	iterate := &i
-	for scanner.Scan() {
+	for fileLine.Scan() {
 		if *itemFound {
 			wg.Wait()
 			return
 		}
 		wg.Add(1)
-		go Worker(userString, *iterate, scanner.Text(), fileName, itemFound)
+		go Worker(userString, *iterate, fileLine.Text(), fileName, itemFound)
 		*iterate = *iterate + 1
 	}
 	wg.Wait()
