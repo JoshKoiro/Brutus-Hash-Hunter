@@ -19,5 +19,5 @@
 
 # Go workspace file
 go.work
-# List files
-SecLists
+# wordlist folder
+wordlists
