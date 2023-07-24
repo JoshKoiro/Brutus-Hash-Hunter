@@ -1,4 +1,4 @@
-![Brutus](Brutus-500px.png)
+![Brutus](Brutus-cover.jpg)
 # Brutus-Hash-Hunter
 **Brutus - The Hash Hunter** is a multithreaded CLI hash comparison program written in Golang.
 
