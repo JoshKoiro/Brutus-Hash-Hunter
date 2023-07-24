@@ -8,7 +8,7 @@ import (
 )
 
 func ShowSplash() {
-	splashText, err := appio.ReadFileAsString("splashscreen-manytools_org.txt")
+	splashText, err := appio.ReadFileAsString("./config/splashscreen-manytools_org.txt")
 	if err != nil {
 		fmt.Println("Error getting splashscreen...\n", err)
 		return
