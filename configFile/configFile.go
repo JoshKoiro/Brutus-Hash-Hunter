@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const configPath string = "./config.yaml"
+const configPath string = "./config/config.yaml"
 
 type Config struct {
 	Filepath  string              `yaml:"-"`
