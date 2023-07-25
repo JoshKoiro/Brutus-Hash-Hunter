@@ -2,6 +2,7 @@ package configFile
 
 import (
 	"brutus-hash-hunter/appio"
+	"brutus-hash-hunter/ui"
 	"fmt"
 	"os"
 
@@ -38,10 +39,12 @@ func (config *Config) DownloadFiles() {
 	var index int = 1
 	for _, value := range config.Wordlists {
 		if _, err := os.Stat("./wordlists/" + value.Name + ".txt"); err == nil {
-			color.Cyan("(%v/%v) Already downloaded %v\n", index, len(config.Wordlists), value.Name)
+			color.Cyan("(%v/%v) %v - Already downloaded", index, len(config.Wordlists), value.Name)
 		} else {
-			color.HiBlue("(%v/%v) Downloading %v...\n", index, len(config.Wordlists), value.Name)
+			color.HiBlue("(%v/%v) %v", index, len(config.Wordlists), value.Name)
+			ui.Spinner("Downloading...")
 			appio.DownloadURL(value.Name, value.Link)
+			fmt.Printf(" Downloaded\n")
 		}
 		index++
 	}

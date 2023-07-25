@@ -3,8 +3,10 @@ package ui
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/fatih/color"
+	"github.com/tj/go-spin"
 )
 
 func ShowSplash() {
@@ -13,7 +15,7 @@ func ShowSplash() {
 		fmt.Println("Error getting splashscreen...\n", err)
 		return
 	}
-	color.Cyan(string(splashText))
+	color.HiBlack(string(splashText))
 }
 
 func WordlistInfo(wordListsLength int) {
@@ -26,4 +28,15 @@ func AskForHash() string {
 	var hash string
 	fmt.Scan(&hash)
 	return hash
+}
+
+func Spinner(text string) {
+	s := spin.New()
+	s.Set(spin.Spin1)
+	for i := 0; i < 4; i++ {
+		fmt.Printf("\r  \033[36m%v\033[m %s ", text, s.Next())
+		time.Sleep(100 * time.Millisecond)
+	}
+	fmt.Print("\033[2K") // Clear entire line
+	fmt.Print("\r")      // Move cursor to the beginning of the line
 }
